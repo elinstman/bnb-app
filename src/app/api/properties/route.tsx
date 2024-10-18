@@ -1,30 +1,24 @@
-// pages/api/properties/create.ts
-import { NextApiRequest, NextApiResponse } from 'next';
+import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method === 'POST') {
-    const { name, description, location, pricePerNight } = req.body;
+export async function POST(request: Request) {
+  const { name, description, location, pricePerNight } = await request.json();
 
-    try {
-      const property = await prisma.property.create({
-        data: {
-          name,
-          description,
-          location,
-          pricePerNight: parseFloat(pricePerNight),
-          available: true,
-        },
-      });
+  try {
+    const property = await prisma.property.create({
+      data: {
+        name,
+        description,
+        location,
+        pricePerNight: parseFloat(pricePerNight),
+        available: true,
+      },
+    });
 
-      res.status(201).json(property);
-    } catch (error) {
-      res.status(400).json({ error: 'Egendomen kunde inte skapas.' });
-    }
-  } else {
-    res.setHeader('Allow', ['POST']);
-    res.status(405).end(`Method ${req.method} Not Allowed`);
+    return NextResponse.json(property, { status: 201 });
+  } catch (error) {
+    return NextResponse.json({ error: 'Egendomen kunde inte skapas.' }, { status: 400 });
   }
 }
