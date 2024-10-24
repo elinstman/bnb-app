@@ -3,6 +3,15 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+export async function GET() {
+  try {
+    const bookings = await prisma.booking.findMany();
+    return NextResponse.json(bookings, { status: 200 });
+  } catch (error) {
+    return NextResponse.json({ error: "Couldn't get the bookings" }, { status: 400 });
+  }
+}
+
 export async function POST(request: Request) {
   const { checkInDate, checkOutDate, totalPrice, userId, propertyId } = await request.json();
 
@@ -21,5 +30,33 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: 'Bokningen kunde inte skapas.' }, { status: 400 });
+  }
+}
+
+export async function PUT(request: Request) {
+  const { id, checkInDate, checkOutDate, totalPrice, userId, propertyId } = await request.json();
+  try {
+    const existingBooking = await prisma.booking.findUnique({
+      where: { id },
+    });
+
+    if (!existingBooking) {
+      return NextResponse.json({ error: 'Bokningen hittades inte.' }, { status: 404 });
+    }
+
+    const updatedBooking = await prisma.booking.update({
+      where: { id },
+      data: {
+        checkInDate: new Date(checkInDate) || existingBooking.checkInDate,
+        checkOutDate: new Date(checkOutDate) || existingBooking.checkOutDate,
+        totalPrice: parseFloat(totalPrice) || existingBooking.totalPrice,
+        createdBy: { connect: { id: userId } },
+        property: { connect: { id: propertyId } },
+      },
+    });
+    return NextResponse.json(updatedBooking, { status: 200 });
+  } catch (error) {
+    console.log(error);
+    return NextResponse.json({ error: "The booking couldn't be updated"}, {status: 400});
   }
 }

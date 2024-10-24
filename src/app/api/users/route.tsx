@@ -22,3 +22,4 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Användaren kunde inte skapas.' }, { status: 400 });
   }
 }
+
