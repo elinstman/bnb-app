@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import { differenceInDays } from 'date-fns';
 
 const prisma = new PrismaClient();
 
@@ -13,14 +14,31 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const { checkInDate, checkOutDate, totalPrice, userId, propertyId } = await request.json();
+  const { checkInDate, checkOutDate, userId, propertyId } = await request.json();
 
   try {
+
+    const property = await prisma.property.findFirst({
+      where: { id: propertyId },
+    });
+
+    if (!property) {
+      return NextResponse.json({ error: "The property couldn't be found"}, {status: 404});
+    }
+
+    const nights = differenceInDays(new Date(checkOutDate), new Date(checkInDate));
+    if(nights <= 0) {
+      return NextResponse.json({ error: "Check out date must be after check in date"}, {status: 400});
+    }
+
+    const totalPrice = nights * property.pricePerNight;
+
+
     const booking = await prisma.booking.create({
       data: {
         checkInDate: new Date(checkInDate),
         checkOutDate: new Date(checkOutDate),
-        totalPrice: parseFloat(totalPrice),
+        totalPrice,
         createdBy: { connect: { id: userId } },
         property: { connect: { id: propertyId } },
       },
