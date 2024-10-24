@@ -38,7 +38,7 @@ export async function PUT(request: Request) {
 
   try {
     // Kontrollera om egendomen existerar
-    const existingProperty = await prisma.property.findUnique({
+    const existingProperty = await prisma.property.findFirst({
       where: { id },
     });
 
@@ -68,7 +68,7 @@ export async function DELETE(request: Request) {
   const { id } = await request.json();
 
   try {
-    const existingProperty = await prisma.property.findUnique({
+    const existingProperty = await prisma.property.findFirst({
       where: { id },
     });
 

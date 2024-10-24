@@ -36,7 +36,7 @@ export async function POST(request: Request) {
 export async function PUT(request: Request) {
   const { id, checkInDate, checkOutDate, totalPrice, userId, propertyId } = await request.json();
   try {
-    const existingBooking = await prisma.booking.findUnique({
+    const existingBooking = await prisma.booking.findFirst({
       where: { id },
     });
 
@@ -60,3 +60,25 @@ export async function PUT(request: Request) {
     return NextResponse.json({ error: "The booking couldn't be updated"}, {status: 400});
   }
 }
+
+export async function DELETE(request: Request) {
+  const { id } = await request.json();
+
+  try {
+    const existingBooking = await prisma.booking.findFirst({
+      where: { id },
+    });
+
+    if (!existingBooking) {
+      return NextResponse.json({ error: 'Bokningen hittades inte.' }, { status: 404});
+    }
+
+    await prisma.booking.delete({
+      where: { id },
+    });
+
+    return NextResponse.json({message: "The booking has been deleted."}, {status: 200});
+    } catch (error) {
+      return NextResponse.json({message: "The booking couldn't be deleted."}, {status: 400});
+    }
+  }
