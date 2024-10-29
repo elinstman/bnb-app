@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyJWT } from "./utils/jwt";
+import { verifyJWT } from "./app/utils/jwt";
 
 const UNSAFE_METHODS = ["POST", "PUT", "PATCH", "DELETE"];
 const UNSAFE_REQUESTS = ["/api/users/me"];
@@ -55,7 +55,7 @@ export const config = {
     matcher: [
         '/api/authors/',
         '/api/authors/:id*',
-        '/api/users/me/'
+        '/api/users/me'
         // '/api/auth/login/:id*',
     ],
 };
