@@ -1,5 +1,6 @@
 import LoginForm from "@/components/auth/loginform";
 import Header from "@/components/content/header";
+import Footer from "@/components/content/footer";
 
 
 
@@ -14,6 +15,9 @@ export default async function Home({ searchParams }: any) {
         </div>
         
       </main>
+      <div>
+      <Footer />
+      </div>
     </div>
   );
 }
