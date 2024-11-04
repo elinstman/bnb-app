@@ -108,7 +108,6 @@ function UserProvider({children}: PropsWithChildren) {
     LocalStorageKit.remove("@library/token")
   };
 
-  //TODO: register takes data sets token
 
 
   const getUser = async () => {
