@@ -6,7 +6,11 @@ import { FormEvent, useState } from "react";
 import { Button } from "../ui/button"
 import { useEffect } from "react";
 
-export default function LoginForm() {
+interface LoginFormProps {
+    onLoginSuccess: () => void;
+  }
+
+export default function LoginForm( { onLoginSuccess }: LoginFormProps ) {
   const user = useUser();
 
   const [email, setEmail] = useState("elin@elin.se");
@@ -27,8 +31,11 @@ export default function LoginForm() {
   };
 
   useEffect(() => {
+    if (user.token) {
+        onLoginSuccess();
+      }
     console.log("user token:", user.token);
-  }, [user.token]);
+  }, [user.token, onLoginSuccess]);
 
   
 
