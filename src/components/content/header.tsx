@@ -28,7 +28,7 @@ export default function Header() {
         <div className="container mx-auto flex items-center justify-start space-x-6">
             {/* Logo */}
             <div className="flex relative items-center space-x-6">
-                <span className="ml-2 text-xl hidden sm:inline font-bold">StayCation</span>
+                <Link href={"/"} className="ml-2 text-xl hidden sm:inline font-bold">StayCation</Link>
             
             {/* Navigation Links */}
             <nav className="flex items-center space-x-4">
@@ -56,15 +56,12 @@ export default function Header() {
     
     </div>
 
-             {/* Input Field */}
-            <div className="flex relative items-center">
-                <input 
-                    type="text" 
-                    placeholder="Search..." 
-                    className="p-2 rounded-md bg-white border-transparent focus:border-gray-300 focus:ring-0 hover:border-gray-300 transition duration-300"
-                    
-                />
-            </div>
+            {user.token && (
+              <Link href="/rent-your-home" className="flex relative items-center">
+              Rent out your home
+             </Link>
+            )}
+            
            
 
         </div>
