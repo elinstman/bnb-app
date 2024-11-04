@@ -4,6 +4,7 @@ import { createContext, PropsWithChildren, useContext, useEffect, useState } fro
 import { SafeUser } from "@/app/types/user";
 
 import {login as loginAction} from "@/actions/login"
+import {register as registerAction} from "@/actions/register";
 import {getUser as getUserAction} from "@/actions/getUser"
 import LocalStorageKit from "@/app/utils/localStorageKit";
 
@@ -21,6 +22,13 @@ type UserContextState = {
       onComplete: OnComplete,
       onError: OnError
     ) => Promise<void>;
+    register: ( 
+      name: string,
+      email: string,
+      password: string,
+      onComplete: OnComplete,
+      onError: OnError
+    ) => Promise<void>;
     logout: () => void;
   };
 };
@@ -30,6 +38,7 @@ const defaultState: UserContextState = {
   user: null,
   actions: {
     login: () => Promise.resolve(),
+    register: () => Promise.resolve(),
     logout: () => {},
   },
 };
@@ -79,6 +88,20 @@ function UserProvider({children}: PropsWithChildren) {
     }
   };
 
+  const register: typeof defaultState.actions.register = async (name, email, password, onComplete, onError) => {
+    try {
+      const token = await registerAction(name, email, password);
+      console.log("Token from register:", token);
+      setToken(token);
+      LocalStorageKit.set("@library/token", token);
+      // onComplete();
+    } catch (error: any) {
+      console.warn("Error registering", error.message);
+      console.warn("Detailed error data:", error.data);
+      onError();
+    }
+  }
+
   const logout = () => {
     setUser(defaultState.user)
     setToken(defaultState.token)
@@ -86,6 +109,7 @@ function UserProvider({children}: PropsWithChildren) {
   };
 
   //TODO: register takes data sets token
+
 
   const getUser = async () => {
     try {
@@ -108,6 +132,7 @@ function UserProvider({children}: PropsWithChildren) {
         user,
         actions: {
           login,
+          register,
           logout,
         },
       }}
