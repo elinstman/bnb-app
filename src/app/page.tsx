@@ -1,6 +1,7 @@
 import LoginForm from "@/components/auth/loginform";
 import Header from "@/components/content/header";
 import Footer from "@/components/content/footer";
+import Properties from "@/components/content/properties";
 
 
 
@@ -8,10 +9,9 @@ export default async function Home({ searchParams }: any) {
   return (
     <div >
       <Header />
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-
-        <LoginForm/>
+      <main className="flex-grow flex flex-col items-center sm:items-start p-8 sm:p-20">
+        <div className="w-full ">
+          <Properties />
         </div>
         
       </main>
