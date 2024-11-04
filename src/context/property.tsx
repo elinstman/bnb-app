@@ -1,6 +1,12 @@
 "use client"
 
 import { createContext, PropsWithChildren, useContext, useEffect, useState } from "react";
+import { createProperty as createPropertyAction } from "@/actions/createProperty";
+import { promises } from "dns";
+import { useUser } from "@/context/user";
+
+
+
 
 type Booking = {
     id: string;
@@ -26,12 +32,23 @@ type PropertyContextState = {
     properties: Property[] | null;
     loading: boolean;
     error: string | null;
+    actions: {
+      createProperty: (
+        name: string,
+        description: string,
+        location: string,
+        pricePerNight: number
+      ) => Promise<void>
+    }
   };
   
   const defaultState: PropertyContextState = {
     properties: null,
     loading: false,
     error: null,
+    actions: {
+      createProperty: () => Promise.resolve(),
+    }
   };
 
 const PropertyContext = createContext<Partial<PropertyContextState>>(defaultState);
@@ -42,6 +59,7 @@ export function PropertyProvider({children}: PropsWithChildren) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+    const { token } = useUser();
    
     useEffect(() => {
         const fetchProperties = async () => {
@@ -64,9 +82,29 @@ export function PropertyProvider({children}: PropsWithChildren) {
     
         fetchProperties();
       }, []);
+
+      // skapa property
+      const createProperty: typeof defaultState.actions.createProperty = async (name, description, location, pricePerNight) => {
+        try {
+          setLoading(true);
+
+          if (!token) {
+            console.error("Error: No token available for creating property"); // LOG: Error if token is missing
+            throw new Error("User is not authenticated.");
+          }
+
+          const newProperty = await createPropertyAction(name, description, location, pricePerNight, token);
+          setProperties((prev) => (prev ? [...prev, newProperty]: [newProperty]));
+        } catch (err: any) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     
       return (
-        <PropertyContext.Provider value={{ properties, loading, error }}>
+        <PropertyContext.Provider value={{ properties, loading, error, actions:{createProperty}}}>
           {children}
         </PropertyContext.Provider>
       );
