@@ -11,7 +11,6 @@ export default async function Property({ searchParams }: any) {
       <Header />
       <main className="flex-grow flex flex-col items-center sm:items-start p-8 sm:p-20">
         <div className="w-full ">
-            Ange uppgifter för ditt hem!
             <PropertyForm />
         </div>
         
