@@ -5,6 +5,8 @@ import { Input } from "../ui/input"
 import { FormEvent, useState } from "react";
 import { Button } from "../ui/button"
 import { useEffect } from "react";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 interface LoginFormProps {
     onLoginSuccess: () => void;
@@ -24,6 +26,9 @@ export default function LoginForm( { onLoginSuccess }: LoginFormProps ) {
       () => {},
       () => {}
     );
+
+    toast.success("Welcome back! Login was successful");
+
     console.log({
       email,
       password,
@@ -54,6 +59,19 @@ export default function LoginForm( { onLoginSuccess }: LoginFormProps ) {
     )
   }
   return (
+    <div> 
+        <ToastContainer 
+                position="top-right"
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            />
     <form onSubmit={login}>
       <Input
         placeholder="Email"
@@ -69,5 +87,6 @@ export default function LoginForm( { onLoginSuccess }: LoginFormProps ) {
       />
       <Button variant="default">Login</Button>
     </form>
+    </div>
   );
 }

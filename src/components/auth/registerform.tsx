@@ -4,6 +4,8 @@ import { FormEvent, useState, useEffect } from "react";
 import { useUser } from "@/context/user";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input"
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 interface RegisterFormProps {
     onRegisterSuccess: () => void;
@@ -26,6 +28,10 @@ export default function RegisterForm( {onRegisterSuccess}: RegisterFormProps ) {
         () => {},
         () => {}
        );
+
+       toast.success("Welcome to Staycation! Your information is saved.");
+
+
        console.log({
         name,
         email,
@@ -41,6 +47,19 @@ export default function RegisterForm( {onRegisterSuccess}: RegisterFormProps ) {
       }, [user.token, onRegisterSuccess]);
 
     return (
+      <div> 
+         <ToastContainer 
+                position="top-right"
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            />
         <form onSubmit={registerUser}>
     <Input
         placeholder="Name"
@@ -62,5 +81,6 @@ export default function RegisterForm( {onRegisterSuccess}: RegisterFormProps ) {
       />
       <Button variant="default">Register</Button>
     </form>
+    </div>
     )
 }
