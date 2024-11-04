@@ -2,6 +2,7 @@
 
 import Modal from "@/components/modal";
 import LoginForm from "@/components/auth/loginform"
+import RegisterForm from "@/components/auth/registerform";
 import { useUser } from "@/context/user";
 import { Button } from "../ui/button"
 import Link from "next/link"
@@ -11,9 +12,12 @@ import { useState } from "react";
 export default function Header() {
     const user = useUser();
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
 
     const openModal = () => setIsModalOpen(true);
     const closeModal = () => setIsModalOpen(false);
+    const openRegisterModal = () => setIsRegisterModalOpen(true);
+    const closeRegisterModal = () => setIsRegisterModalOpen(false);
 
     const handleLogout = () => {
         user.actions.logout();
@@ -30,6 +34,11 @@ export default function Header() {
             <nav className="flex items-center space-x-4">
                <Link href="#" className="text-gray-600 hover:text-gray-900">Explore</Link>
                <Link href="#" className="text-gray-600 hover:text-gray-900">Book</Link>
+               {!user.token && (
+                            <button onClick={openRegisterModal} className="text-gray-600 hover:text-gray-900">
+                                Register
+                            </button>
+                        )}
                {user.token ? (
             <Button onClick={handleLogout}>
               Sign out
@@ -62,6 +71,10 @@ export default function Header() {
 
         <Modal isOpen={isModalOpen} onClose={closeModal}>
         <LoginForm onLoginSuccess={closeModal} />
+      </Modal>
+
+      <Modal isOpen={isRegisterModalOpen} onClose={closeRegisterModal}>
+        <RegisterForm onRegisterSuccess={closeRegisterModal} />
       </Modal>
     </header>
     )
