@@ -4,6 +4,8 @@ import { FormEvent, useState, useEffect } from "react";
 import { useProperties } from "@/context/property";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input"
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function PropertyForm() {
     const property = useProperties();
@@ -12,6 +14,7 @@ export default function PropertyForm() {
     const [location, setLocation] = useState("Stockholm");
     const [pricePerNight, setPricePerNight] = useState<number | "">("");
     const [error, setError] = useState(""); // För att hantera fel
+    
 
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -40,6 +43,8 @@ export default function PropertyForm() {
                 parsedPrice 
             );
 
+            toast.success("Property has been successfully created!");
+
             // Rensa formulärfälten efter en lyckad skapelse
             setName("");
             setDescription("");
@@ -59,6 +64,20 @@ export default function PropertyForm() {
 
 
     return (
+        <div>
+            <ToastContainer 
+                position="top-right"
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            />
+            
         <form onSubmit={handleSubmit}>
             <Input
             placeholder="Name"
@@ -89,5 +108,6 @@ export default function PropertyForm() {
              {/* <Button variant="default">Create</Button> */}
 
         </form>
+        </div>
     )
 }
