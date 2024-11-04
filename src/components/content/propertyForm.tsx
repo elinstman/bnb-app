@@ -6,6 +6,7 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input"
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Link from "next/link";
 
 export default function PropertyForm() {
     const property = useProperties();
@@ -64,7 +65,7 @@ export default function PropertyForm() {
 
 
     return (
-        <div>
+        <div className="container mx-auto p-8 gap-6">
             <ToastContainer 
                 position="top-right"
                 autoClose={3000}
@@ -77,23 +78,31 @@ export default function PropertyForm() {
                 pauseOnHover
                 theme="light"
             />
+            <div  className="flex flex-col items-start w-full space-y-4 sm:items-start sm:w-1/2">
+            <h2 className="text-4xl font-bold mb-6">Describe your home</h2>
+            <p className="text-lg flex-wrap text-black">Here you can describe what type of accommodation you have and where it's located. You also need to add a price per night.</p>
+            </div>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="mt-6 mb-6">
+            <span className="text-sm">Give your home a suitabe name:</span>
             <Input
             placeholder="Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
              />
+             <span className="text-sm">What makes your home special?</span>
              <Input 
               placeholder="Description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
              />
+             <span className="text-sm">Where is it located?</span>
              <Input 
               placeholder="Location"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
              />
+             <span className="text-sm">How much is the cost per night?</span>
              <Input 
              placeholder="Price per Night"
              type="number"
@@ -108,6 +117,8 @@ export default function PropertyForm() {
              {/* <Button variant="default">Create</Button> */}
 
         </form>
+
+        <Link href={"/"}>Back to home</Link>
         </div>
     )
 }
