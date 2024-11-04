@@ -1,9 +1,24 @@
 "use client"
 
+import Modal from "@/components/modal";
+import LoginForm from "@/components/auth/loginform"
+import { useUser } from "@/context/user";
+import { Button } from "../ui/button"
 import Link from "next/link"
+import { useState } from "react";
 
 
 export default function Header() {
+    const user = useUser();
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const openModal = () => setIsModalOpen(true);
+    const closeModal = () => setIsModalOpen(false);
+
+    const handleLogout = () => {
+        user.actions.logout();
+      };
+
     return (
         <header className="bg-white shadow-md p-4">
         <div className="container mx-auto flex items-center justify-start space-x-6">
@@ -12,10 +27,18 @@ export default function Header() {
                 <span className="ml-2 text-xl hidden sm:inline font-bold">StayCation</span>
             
             {/* Navigation Links */}
-            <nav className="flex space-x-4">
+            <nav className="flex items-center space-x-4">
                <Link href="#" className="text-gray-600 hover:text-gray-900">Explore</Link>
                <Link href="#" className="text-gray-600 hover:text-gray-900">Book</Link>
-               <Link href="#" className="text-gray-600 hover:text-gray-900">My Account</Link>
+               {user.token ? (
+            <Button onClick={handleLogout}>
+              Sign out
+            </Button>
+          ) : (
+            <button onClick={openModal} className="text-gray-600 hover:text-gray-900">
+              Sign in
+            </button>
+          )}
             </nav>
            
             </div>
@@ -37,7 +60,9 @@ export default function Header() {
 
         </div>
 
-
+        <Modal isOpen={isModalOpen} onClose={closeModal}>
+        <LoginForm onLoginSuccess={closeModal} />
+      </Modal>
     </header>
     )
 }
