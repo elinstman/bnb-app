@@ -27,7 +27,7 @@ export default function Properties() {
             <div className="relative mb-4 w-full aspect-w-3 aspect-h-4">
 
             <CldImage
-            src="cld-sample-5" // Use this sample image or upload your own via the Media Explorer
+            src="samples/landscapes/nature-mountains" // Use this sample image or upload your own via the Media Explorer
             alt={property.name}
             width="500" // Transform the image: auto-crop to square aspect_ratio
             height="500"
