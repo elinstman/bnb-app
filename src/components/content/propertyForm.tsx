@@ -9,9 +9,9 @@ import "react-toastify/dist/ReactToastify.css";
 
 export default function PropertyForm() {
     const property = useProperties();
-    const [name, setName] = useState("Mysig lägenhet");
-    const [description, setDescription] = useState("En mysig lägenhet mitt i city nära bussar.");
-    const [location, setLocation] = useState("Stockholm");
+    const [name, setName] = useState("");
+    const [description, setDescription] = useState("");
+    const [location, setLocation] = useState("");
     const [pricePerNight, setPricePerNight] = useState<number | "">("");
     const [error, setError] = useState(""); // För att hantera fel
     
@@ -77,7 +77,7 @@ export default function PropertyForm() {
                 pauseOnHover
                 theme="light"
             />
-            
+
         <form onSubmit={handleSubmit}>
             <Input
             placeholder="Name"
