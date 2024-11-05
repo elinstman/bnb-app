@@ -8,7 +8,7 @@ import { Button } from "../ui/button"
 import Link from "next/link"
 import { useState } from "react";
 import { useRouter } from 'next/navigation';
-// import { Dropdown } from "react-day-picker";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -48,7 +48,7 @@ export default function Header() {
             <nav className="flex items-center space-x-4">
                <Link href="#" className="text-gray-600 hover:text-gray-900">Book</Link>
                {user.token && (
-              <Link href="/rent-your-home" className="flex relative items-center">
+              <Link href="/rent-your-home" className="flex relative items-center text-gray-600 hover:text-gray-900">
               Rent out your home
              </Link>
             )}
@@ -57,6 +57,20 @@ export default function Header() {
                                 Register
                             </button>
                         )}
+                        {user.token && (
+              <DropdownMenu>
+              <DropdownMenuTrigger className="text-gray-600 hover:text-gray-900">My Account</DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem onClick={() => handleNavigation('/bookings')}
+                >Bookings</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleNavigation('/Property')}
+                >Property</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleNavigation('/profile')}
+                >Profile</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            
+            )} 
                {user.token ? (
             <Button onClick={handleLogout}>
               Sign out
@@ -76,20 +90,7 @@ export default function Header() {
 
            
 
-          {user.token && (
-              <DropdownMenu>
-              <DropdownMenuTrigger>My Account</DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => handleNavigation('/bookings')}
-                >Bookings</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleNavigation('/Property')}
-                >Property</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleNavigation('/profile')}
-                >Profile</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            
-            )}  
+           
 
            
             
