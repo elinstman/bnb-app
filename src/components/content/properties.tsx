@@ -1,8 +1,8 @@
 "use client"
 
 import { useProperties } from "@/context/property";
-import Image from "next/image";
 import { CldImage } from 'next-cloudinary';
+import Link from "next/link";
 
 export default function Properties() {
     const { properties, loading, error } = useProperties();
@@ -23,7 +23,9 @@ export default function Properties() {
                 <div className="mt-8 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 max-w-full gap-4 p-4 sm:p-6 lg:p-8">
                 {properties && properties.length > 0 ? (
             properties.map((property) => (
-          <div key={property.id} className="flex flex-col p-2 rounded-md w-full transition-transform duration-300 transform hover:scale-105 hover:shadow-xl hover:bg-gray-100">
+
+          <Link key={property.id} href={`/properties/${property.id}`}>
+            <div className="flex flex-col p-2 rounded-md w-full transition-transform duration-300 transform hover:scale-105 hover:shadow-xl hover:bg-gray-100"> 
             <div className="relative mb-4 w-full aspect-w-3 aspect-h-4">
 
             <CldImage
@@ -48,11 +50,14 @@ export default function Properties() {
             </div>
             
           </div>
+          </Link>
         ))
       ) : (
         <p>No properties found.</p>
       )}
-                </div>
+      </div>
+     
+               
 
             </div>
         </section>
