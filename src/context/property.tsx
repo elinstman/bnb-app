@@ -39,6 +39,7 @@ type PropertyContextState = {
         location: string,
         pricePerNight: number
       ) => Promise<void>
+      updateProperty: (updatedProperty: Property) => void
     }
   };
   
@@ -48,6 +49,7 @@ type PropertyContextState = {
     error: null,
     actions: {
       createProperty: () => Promise.resolve(),
+      updateProperty: () => {}
     }
   };
 
@@ -102,9 +104,17 @@ export function PropertyProvider({children}: PropsWithChildren) {
         }
     };
 
+    const updateProperty = (updatedProperty: Property) => {
+      setProperties((prevProperties) =>
+        prevProperties ? prevProperties.map((prop) =>
+          prop.id === updatedProperty.id ? updatedProperty : prop
+        ) : null
+      );
+    };
+
     
       return (
-        <PropertyContext.Provider value={{ properties, loading, error, actions:{createProperty}}}>
+        <PropertyContext.Provider value={{ properties, loading, error, actions:{createProperty, updateProperty}}}>
           {children}
         </PropertyContext.Provider>
       );
