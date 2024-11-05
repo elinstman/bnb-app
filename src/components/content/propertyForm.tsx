@@ -114,7 +114,6 @@ export default function PropertyForm() {
              />
              <Button type="submit">Create
          </Button>
-             {/* <Button variant="default">Create</Button> */}
 
         </form>
 
