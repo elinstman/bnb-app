@@ -64,24 +64,75 @@ export async function PUT(request: Request) {
   }
 }
 
-export async function DELETE(request: Request) {
-  const { id } = await request.json();
+// NYA DELETE
+// export async function DELETE(request: Request) {
+//   const url = new URL(request.url);
+//   const id = url.pathname.split('/').pop(); // Extrahera id från URL:en
 
+//   console.log("Received DELETE request with ID:", id);
+
+//   try {
+//     const existingProperty = await prisma.property.findFirst({
+//       where: { id },
+//     });
+
+//     if (!existingProperty) {
+//       return NextResponse.json({ error: 'Egendomen kunde inte hittas.' }, { status: 404 });
+//     }
+
+//     await prisma.property.delete({
+//       where: { id },
+//     });
+
+//     return NextResponse.json({ message: 'Egendomen har tagits bort.' }, { status: 200 });
+//   } catch (error) {
+//     return NextResponse.json({ error: 'Egendomen kunde inte tas bort.' }, { status: 400 });
+//   }
+// }
+
+
+
+// GAMLA DELETE
+export async function DELETE(request: Request) {
   try {
+    // Läs body från DELETE-begäran
+    const { id } = await request.json();
+
+    // Kontrollera om ID finns i begäran
+    if (!id) {
+      return NextResponse.json({ error: 'Ett ID krävs för att radera en egendom.' }, { status: 400 });
+    }
+
+    console.log("Received DELETE request with ID:", id);
+
+    // Kontrollera om property finns
     const existingProperty = await prisma.property.findFirst({
-      where: { id },
+      where: { id: String(id) },
     });
 
     if (!existingProperty) {
       return NextResponse.json({ error: 'Egendomen kunde inte hittas.' }, { status: 404 });
     }
 
+    // Kontrollera om det finns några bokningar kopplade till denna property
+    const bookings = await prisma.booking.findMany({
+      where: {
+        propertyId: String(id),
+      },
+    });
+
+    if (bookings.length > 0) {
+      return NextResponse.json({ error: 'Det finns bokningar kopplade till denna egendom. Radera bokningarna först.' }, { status: 400 });
+    }
+
+    // Om inga bokningar finns, radera egendomen
     await prisma.property.delete({
-      where: { id },
+      where: { id: String(id) }
     });
 
     return NextResponse.json({ message: 'Egendomen har tagits bort.' }, { status: 200 });
   } catch (error) {
-    return NextResponse.json({ error: 'Egendomen kunde inte tas bort.' }, { status: 400 });
+    console.error("Error deleting property:", error);
+    return NextResponse.json({ error: 'Egendomen kunde inte tas bort.' }, { status: 500 });
   }
 }
