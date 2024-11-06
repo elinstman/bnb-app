@@ -5,6 +5,8 @@ import { useProperties } from "@/context/property";
 import { Property } from "@/app/types/property";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
+import { useUser } from "@/context/user";
+import Link from "next/link";
 
 interface EditPropertyProps {
     property: Property;
@@ -15,6 +17,7 @@ interface EditPropertyProps {
 export default function EditProperty({ property, onSave, onClose }: EditPropertyProps) {
     const [formData, setFormData] = useState<Property>({ ...property });
     const { actions } = useProperties();
+    const user = useUser();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -23,6 +26,8 @@ export default function EditProperty({ property, onSave, onClose }: EditProperty
             [name]: name === "pricePerNight" ? parseInt(value) : value,
         }));
     };
+
+    
 
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
@@ -36,8 +41,10 @@ export default function EditProperty({ property, onSave, onClose }: EditProperty
         onClose();
     };
 
+    
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
+            <div> 
             <Input
                 placeholder="Name"
                 name="name"
@@ -89,6 +96,8 @@ export default function EditProperty({ property, onSave, onClose }: EditProperty
                     Save
                 </Button>
             </div>
-        </form>
+            </div> 
+               
+            </form>
     );
 }
