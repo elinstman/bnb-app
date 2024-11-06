@@ -2,7 +2,7 @@
 
 import { createContext, PropsWithChildren, useContext, useEffect, useState } from "react";
 import { createProperty as createPropertyAction } from "@/actions/createProperty";
-import { promises } from "dns";
+import { deleteProperty as deletePropertyAction } from "@/actions/deleteProperty";
 import { useUser } from "@/context/user";
 
 
@@ -39,7 +39,8 @@ type PropertyContextState = {
         location: string,
         pricePerNight: number
       ) => Promise<void>
-      updateProperty: (updatedProperty: Property) => void
+      updateProperty: (updatedProperty: Property) => void;
+      deleteProperty: (propertyId: string) => Promise<void>;
     }
   };
   
@@ -49,7 +50,8 @@ type PropertyContextState = {
     error: null,
     actions: {
       createProperty: () => Promise.resolve(),
-      updateProperty: () => {}
+      updateProperty: () => {},
+      deleteProperty: () => Promise.resolve()
     }
   };
 
@@ -112,9 +114,47 @@ export function PropertyProvider({children}: PropsWithChildren) {
       );
     };
 
+    const deleteProperty: typeof defaultState.actions.deleteProperty = async (propertyId) => {
+      try {
+          setLoading(true);
+          if (!token) throw new Error("User is not authenticated.");
+  
+          console.log("Deleting property with ID:", propertyId);
+  
+          // Anropa deleteProperty från backend
+          const response = await fetch("http://localhost:3000/api/properties", {
+              method: "DELETE",
+              headers: {
+                  "Content-Type": "application/json",
+                  "Authorization": `Bearer ${token}`,
+              },
+              body: JSON.stringify({ id: propertyId }), // Skicka id i request body
+          });
+  
+          const responseBody = await response.json();
+          console.log("Delete response:", responseBody);
+  
+          if (!response.ok) {
+              throw new Error(responseBody.error || "Failed to delete property");
+          }
+  
+          // Efter borttagning, ta bort den från contextens properties
+          setProperties((prevProperties) =>
+              prevProperties ? prevProperties.filter((prop) => prop.id !== propertyId) : null
+          );
+  
+          console.log(`Property with ID ${propertyId} deleted successfully.`);
+      } catch (err: any) {
+          setError(err.message);
+      } finally {
+          setLoading(false);
+      }
+  };
+
+
     
       return (
-        <PropertyContext.Provider value={{ properties, loading, error, actions:{createProperty, updateProperty}}}>
+        <PropertyContext.Provider value={{ properties, loading, error, actions:{createProperty, updateProperty, deleteProperty}}}>
           {children}
         </PropertyContext.Provider>
       );
