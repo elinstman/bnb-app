@@ -6,7 +6,9 @@ import { SafeUser } from "@/app/types/user";
 import {login as loginAction} from "@/actions/login"
 import {register as registerAction} from "@/actions/register";
 import {getUser as getUserAction} from "@/actions/getUser"
+import { format } from "date-fns";
 import LocalStorageKit from "@/app/utils/localStorageKit";
+import { Booking } from "@/app/types/property";
 
 type OnComplete = (response?: any) => void;
 type OnError = (error?: any) => void;
@@ -15,6 +17,8 @@ type OnError = (error?: any) => void;
 type UserContextState = {
   token: string | null;
   user: SafeUser | null;
+  bookings: Booking[];
+  loading: boolean;
   actions: {
     login: (
       email: string,
@@ -30,16 +34,20 @@ type UserContextState = {
       onError: OnError
     ) => Promise<void>;
     logout: () => void;
+    fetchBookings: () => Promise<void>;
   };
 };
 
 const defaultState: UserContextState = {
   token: null,
   user: null,
+  bookings: [],
+  loading: false,
   actions: {
     login: () => Promise.resolve(),
     register: () => Promise.resolve(),
     logout: () => {},
+    fetchBookings: () => Promise.resolve(),
   },
 };
 
@@ -52,6 +60,12 @@ function UserProvider({children}: PropsWithChildren) {
     defaultState.token
   );
   const [user, setUser] = useState<typeof defaultState.user>(defaultState.user);
+  const [bookings, setBookings] = useState<Booking[]>(defaultState.bookings);
+  const [loading, setLoading] = useState<boolean>(defaultState.loading);
+
+  const setBookingsInContext = (bookings: Booking[]) => {
+    setBookings(bookings);  // Uppdaterar bokningarna i state
+  };
 
 //   se efter om det finns token sparad i localstorage
   useEffect(() => {
@@ -124,15 +138,51 @@ function UserProvider({children}: PropsWithChildren) {
     }
   }
 
+  const fetchBookings = async () => {
+    if (!token) {
+      console.log("No token found, cannot fetch bookings.");
+      return;
+    }
+
+    console.log("Fetching bookings with token:", token);
+
+    setLoading(true);
+    try {
+      const response = await fetch("/api/bookings", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // Skicka med token här
+        },
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setBookingsInContext(data);
+        console.log("hämtning data", data)
+      } else {
+        console.error("Failed to fetch bookings:", data.error);
+      }
+    } catch (error) {
+      console.error("Error fetching bookings:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  
+
+
   return (
     <UserContext.Provider
       value={{
         token,
         user,
+        bookings,
         actions: {
           login,
           register,
           logout,
+          fetchBookings,
         },
       }}
     >

@@ -1,17 +1,55 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import jwt from 'jsonwebtoken';
 import { differenceInDays } from 'date-fns';
 
 const prisma = new PrismaClient();
 
-export async function GET() {
+const SECRET_KEY = process.env.JWT_SECRET || 'your-secret-key';
+
+const getUserIdFromToken = (token: string) => {
   try {
-    const bookings = await prisma.booking.findMany();
+    const decoded: any = jwt.verify(token, SECRET_KEY);  // Verifiera och dekoda token
+    return decoded.userId;  // Anta att userId finns i token-payloaden
+  } catch (error) {
+    throw new Error('Invalid or expired token');
+  }
+};
+
+export async function GET(request: Request) {
+  try {
+    // Hämta användarens ID från request-headers (eller query-parametrar)
+    const token = request.headers.get("Authorization")?.split(" ")[1]; // Hämtar token från "Authorization" header
+    if (!token) {
+      return NextResponse.json({ error: "Authorization token is missing." }, { status: 400 });
+    }
+
+    const userId = await getUserIdFromToken(token); // Du kan skapa denna funktion för att hämta användarens ID från token
+
+    if (!userId) {
+      return NextResponse.json({ error: "User not found or invalid token." }, { status: 400 });
+    }
+
+    // Hämtar bokningar för användaren
+    const bookings = await prisma.booking.findMany({
+      where: {
+        createdById: userId, 
+      },
+    });
+
+    if (!bookings || bookings.length === 0) {
+      return NextResponse.json({ message: "No bookings found for this user." }, { status: 404 });
+    }
+
     return NextResponse.json(bookings, { status: 200 });
   } catch (error) {
+    console.error("Error fetching bookings:", error);
     return NextResponse.json({ error: "Couldn't get the bookings" }, { status: 400 });
   }
 }
+
+
+
 
 export async function POST(request: Request) {
   const { checkInDate, checkOutDate, userId, propertyId } = await request.json();
