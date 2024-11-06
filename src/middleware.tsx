@@ -17,6 +17,7 @@ export async function middleware(request: NextRequest) {
             //TODO: get authrization header
             const Authorization = request.headers.get("Authorization");
             if(!Authorization) {
+                console.log("No Authorization header found");
                 throw new Error("No authrization header")
             }
               //TODO: get token
