@@ -46,6 +46,30 @@ export default function PropertyDetails({ params }: PropertyDetailsProps) {
         return <div>Loading property details...</div>;
     }
    
+    const handleDelete = async () => {
+        if (actions?.deleteProperty) {
+          // Extrahera ID från URL
+          const url = window.location.pathname;
+          const propertyId = url.split("/").pop(); // Hämtar sista delen av URL:en
+          
+          console.log("Property ID från webbadressen: ", propertyId);
+      
+          if (propertyId) {
+            try {
+              await actions.deleteProperty(propertyId);
+              console.log(`Property with ID ${propertyId} deleted successfully.`);
+
+              toast.success(`The property "${property?.name}" has been successfully deleted.`);
+              
+              window.location.replace("/");
+            } catch (error) {
+              console.error("Error while deleting property: ", error);
+            }
+          } else {
+            console.error("Property ID could not be extracted from the URL");
+          }
+        }
+    };
 
     return (
         <div>
@@ -64,7 +88,7 @@ export default function PropertyDetails({ params }: PropertyDetailsProps) {
              <Header />
         <div className="container mx-auto p-8">
              <CldImage
-            src="samples/landscapes/nature-mountains" 
+            src="house-cabin-snow" 
             alt={property.name}
             width="500" 
             height="500"
@@ -80,9 +104,12 @@ export default function PropertyDetails({ params }: PropertyDetailsProps) {
             <p>Price per night: {property.pricePerNight}kr</p>
             <p>Available: {property.available ? "Yes" : "No"}</p>
             {user.token && (
-                 <Button 
+                <div className="flex gap-2 mt-2"> 
+                     <Button 
                  onClick={openModal}
-                 >Edit</Button>
+                 >Edit</Button>  
+                 <Button onClick={handleDelete} className="bg-red-500 text-white p-2 rounded">Delete</Button>              
+                 </div>
             )}
            
         </div>
