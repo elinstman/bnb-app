@@ -29,16 +29,21 @@ export default function EditProperty({ property, onSave, onClose }: EditProperty
 
     
 
-    const handleSubmit = (e: FormEvent) => {
+    const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
+        const updatedProperty = { ...formData, id: property.id };
 
         console.log("Updated Property Data:", formData);
 
         if (actions?.updateProperty) {
-            actions.updateProperty(formData);
+            try {
+                await actions.updateProperty(updatedProperty); // Uppdatera property via contexten
+                onSave(updatedProperty); // Informera parent-komponenten om uppdateringen
+                onClose(); // Stäng edit-komponenten
+            } catch (error) {
+                console.error("Failed to update property:", error);
+            }
         }
-        onSave(formData);
-        onClose();
     };
 
     

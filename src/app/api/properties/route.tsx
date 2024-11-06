@@ -37,6 +37,20 @@ export async function PUT(request: Request) {
   const { id, name, description, location, pricePerNight, available } = await request.json();
 
   try {
+
+    const missingFields = [];
+    if (!id) missingFields.push("id");
+    if (!name) missingFields.push("name");
+    if (!description) missingFields.push("description");
+    if (!location) missingFields.push("location");
+    if (pricePerNight === undefined) missingFields.push("pricePerNight");
+
+    // Om några fält saknas, returnera ett 400-fel med specifika fält
+    if (missingFields.length > 0) {
+      return NextResponse.json({ error: `Missing required fields: ${missingFields.join(", ")}` }, { status: 400 });
+    }
+
+   
     // Kontrollera om egendomen existerar
     const existingProperty = await prisma.property.findFirst({
       where: { id },
@@ -63,32 +77,6 @@ export async function PUT(request: Request) {
     return NextResponse.json({ error: 'Egendomen kunde inte uppdateras.' }, { status: 400 });
   }
 }
-
-// NYA DELETE
-// export async function DELETE(request: Request) {
-//   const url = new URL(request.url);
-//   const id = url.pathname.split('/').pop(); // Extrahera id från URL:en
-
-//   console.log("Received DELETE request with ID:", id);
-
-//   try {
-//     const existingProperty = await prisma.property.findFirst({
-//       where: { id },
-//     });
-
-//     if (!existingProperty) {
-//       return NextResponse.json({ error: 'Egendomen kunde inte hittas.' }, { status: 404 });
-//     }
-
-//     await prisma.property.delete({
-//       where: { id },
-//     });
-
-//     return NextResponse.json({ message: 'Egendomen har tagits bort.' }, { status: 200 });
-//   } catch (error) {
-//     return NextResponse.json({ error: 'Egendomen kunde inte tas bort.' }, { status: 400 });
-//   }
-// }
 
 
 

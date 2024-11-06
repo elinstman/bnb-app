@@ -3,6 +3,7 @@
 import { createContext, PropsWithChildren, useContext, useEffect, useState } from "react";
 import { createProperty as createPropertyAction } from "@/actions/createProperty";
 import { deleteProperty as deletePropertyAction } from "@/actions/deleteProperty";
+import { updateProperty as updatePropertyAction } from "@/actions/updateProperty";
 import { useUser } from "@/context/user";
 
 
@@ -39,7 +40,7 @@ type PropertyContextState = {
         location: string,
         pricePerNight: number
       ) => Promise<void>
-      updateProperty: (updatedProperty: Property) => void;
+      updateProperty: (updatedProperty: Property) => Promise<void>;
       deleteProperty: (propertyId: string) => Promise<void>;
     }
   };
@@ -50,7 +51,7 @@ type PropertyContextState = {
     error: null,
     actions: {
       createProperty: () => Promise.resolve(),
-      updateProperty: () => {},
+      updateProperty: () => Promise.resolve(),
       deleteProperty: () => Promise.resolve()
     }
   };
@@ -106,13 +107,36 @@ export function PropertyProvider({children}: PropsWithChildren) {
         }
     };
 
-    const updateProperty = (updatedProperty: Property) => {
-      setProperties((prevProperties) =>
-        prevProperties ? prevProperties.map((prop) =>
-          prop.id === updatedProperty.id ? updatedProperty : prop
-        ) : null
-      );
+    const updateProperty: typeof defaultState.actions.updateProperty = async (updatedProperty) => {
+      try {
+        setLoading(true);
+
+        if (!token) {
+          console.error("Error: No token available for updating property");
+          throw new Error("User is not authenticated.");
+        }
+
+        const updated = await updatePropertyAction(
+          updatedProperty.id, 
+          updatedProperty.name, 
+          updatedProperty.description, 
+          updatedProperty.location, 
+          updatedProperty.pricePerNight, 
+          updatedProperty.available, 
+          token);
+        
+        setProperties((prevProperties) =>
+          prevProperties ? prevProperties.map((prop) =>
+            prop.id === updated.id ? updated : prop
+          ) : null
+        );
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
     };
+
 
     const deleteProperty: typeof defaultState.actions.deleteProperty = async (propertyId) => {
       try {
