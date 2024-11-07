@@ -1,76 +1,99 @@
-// import React, { createContext, useState, useContext, useEffect } from 'react';
-// import { useUser } from './user';
+import { createContext, PropsWithChildren, useContext, useState, useEffect } from 'react';
+import { useUser } from './user';
+import { Booking } from "@/app/types/property";
 
-// interface Booking {
-//     id: string;
-//     propertyId: string;
-//     startDate: string;
-//     endDate: string;
-//     guests: number;
-//   }
+//
 
-//   interface BookingsContextType {
-//     bookings: Booking[];
-//     setBookings: (bookings: Booking[]) => void;
-//     fetchBookings: () => Promise<void>;
-//     loading: boolean;
-//   }
+type BookingContextState = {
+    bookings: Booking[] | null;
+    loading: boolean;
+    error: string | null;
+    actions: {
+    //   createBooking: (
+    //     propertyId: string,
+    //     checkInDate: string,
+    //     checkOutDate: string,
+    //     totalPrice: number
+    //   ) => Promise<void>;
+    //   updateBooking: (updatedBooking: Booking) => Promise<void>;
+      deleteBooking: (bookingId: string) => Promise<void>;
+    };
+  };
 
-//   const BookingsContext = createContext<BookingsContextType | undefined>(undefined);
+  const defaultState: BookingContextState = {
+    bookings: null,
+    loading: false,
+    error: null,
+    actions: {
+    //   createBooking: () => Promise.resolve(),
+    //   updateBooking: () => Promise.resolve(),
+      deleteBooking: () => Promise.resolve(),
+    },
+  };
 
-//   export const BookingsProvider = ({ children }: { children: React.ReactNode }) => {
-//     const [bookings, setBookings] = useState<Booking[]>([]);
-//     const [loading, setLoading] = useState<boolean>(true);
-//     const { user } = useUser();
+  const BookingsContext = createContext<BookingContextState>(defaultState);
 
-//     const fetchBookings = async () => {
-//         if (!user?.token) {
-//           console.log("No token found, cannot fetch bookings.");
-//           setLoading(false);
-//           return;
-//         }
-      
-//         try {
-//           // Lägg till token i Authorization header
-//           const response = await fetch("/api/bookings", {
-//             method: "GET",
-//             headers: {
-//               "Content-Type": "application/json",
-//               Authorization: `Bearer ${user.token}`,  // Skicka med token här
-//             },
-//           });
-      
-//           const data = await response.json();
-      
-//           if (response.ok) {
-//             setBookings(data.bookings);
-//           } else {
-//             console.error("Failed to fetch bookings:", data.error);
-//           }
-//         } catch (error) {
-//           console.error("Error fetching bookings:", error);
-//         } finally {
-//           setLoading(false);
-//         }
-//       };
+  export const BookingsProvider = ({ children }: PropsWithChildren) => {
+    const [bookings, setBookings] = useState<Booking[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
+    const user = useUser();
+
+    const deleteBooking: typeof defaultState.actions.deleteBooking = async (bookingId) => {
+        try {
+            setLoading(true);
+            if (!user) throw new Error("User is not authenticated.");
     
-//       useEffect(() => {
-//         if (user?.id) {
-//           fetchBookings();
-//         }
-//       }, [user?.id]);
+            console.log("Deleting booking with ID:", bookingId);
     
-//       return (
-//         <BookingsContext.Provider value={{ bookings, setBookings, fetchBookings, loading }}>
-//           {children}
-//         </BookingsContext.Provider>
-//       );
-//     };
+            // Anropa deleteProperty från backend
+            const response = await fetch("http://localhost:3000/api/bookings", {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${user.token}`,
+                },
+                body: JSON.stringify({ id: bookingId }), // Skicka id i request body
+            });
     
-//     export const useBookings = (): BookingsContextType => {
-//       const context = useContext(BookingsContext);
-//       if (!context) {
-//         throw new Error('useBookings must be used within a BookingsProvider');
-//       }
-//       return context;
-//     };
+            const responseBody = await response.json();
+            console.log("Delete response:", responseBody);
+    
+            if (!response.ok) {
+                throw new Error(responseBody.error || "Failed to delete booking");
+            }
+    
+            setBookings((prevBookings) =>
+                prevBookings ? prevBookings.filter((booking) => booking.id !== bookingId) : []
+            );
+    
+            console.log(`Property with ID ${bookingId} deleted successfully.`);
+        } catch (err: any) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+    
+      return (
+        <BookingsContext.Provider 
+        value={{ 
+            bookings, 
+            loading, 
+            error, 
+            actions: {
+                deleteBooking,
+              },
+             }}>
+          {children}
+        </BookingsContext.Provider>
+      );
+    };
+    
+    export const useBookings = (): BookingContextState => {
+      const context = useContext(BookingsContext);
+      if (!context) {
+        throw new Error('useBookings must be used within a BookingsProvider');
+      }
+      return context;
+    };

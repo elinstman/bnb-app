@@ -65,7 +65,7 @@ export function PropertyProvider({children}: PropsWithChildren) {
     const [error, setError] = useState<string | null>(null);
 
     const { token } = useUser();
-   
+    
     useEffect(() => {
         const fetchProperties = async () => {
           setLoading(true);

@@ -62,7 +62,7 @@ export default function Header() {
               <DropdownMenuTrigger className="text-gray-600 hover:text-gray-900">My Account</DropdownMenuTrigger>
               <DropdownMenuContent>
                 <DropdownMenuItem onClick={() => handleNavigation('/booking')}
-                >Bookings</DropdownMenuItem>
+                >My Bookings</DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleNavigation('/Property')}
                 >Property</DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleNavigation('/profile')}
