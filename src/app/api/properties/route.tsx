@@ -5,7 +5,11 @@ const prisma = new PrismaClient();
 
 export async function GET() {
   try {
-    const properties = await prisma.property.findMany();
+    const properties = await prisma.property.findMany({
+      include: {
+        bookings: true,
+      },
+    });
     return NextResponse.json(properties, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error: 'Kunde inte hämta egendomarna.' }, { status: 400 });
