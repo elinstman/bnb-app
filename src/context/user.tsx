@@ -75,7 +75,7 @@ function UserProvider({children}: PropsWithChildren) {
             return
         }
     }
-  },[])
+  },[token])
 
 //   om token finns, hämtas användaren
   useEffect(() => {
@@ -92,9 +92,11 @@ function UserProvider({children}: PropsWithChildren) {
   ) => {
     try {
         const token = await loginAction(email, password)
-        console.log("token after setting in login",token)
         setToken(token)
         LocalStorageKit.set("@library/token", token)
+
+      const storedToken = LocalStorageKit.get("@library/token");
+
     } catch(error: any) {
         console.warn("Error logging in", error.message)
         onError()
@@ -125,7 +127,7 @@ function UserProvider({children}: PropsWithChildren) {
 
   const getUser = async () => {
     try {
-        if(! token ){
+        if(!token ){
             throw new Error();
         }
         // return console.log("token", token)

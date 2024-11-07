@@ -77,6 +77,7 @@ export function PropertyProvider({children}: PropsWithChildren) {
               throw new Error("Failed to fetch properties");
             }
             const data = await response.json();
+            console.log("fetched properties data", data)
             setProperties(data);
           } catch (err: any) {
             setError(err.message);
