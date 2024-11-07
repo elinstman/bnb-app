@@ -156,7 +156,7 @@ export default function PropertyDetails({ params }: PropertyDetailsProps) {
                                 <li key={booking.id} className="p-4 border-b">
                                     <p><strong>Check-in:</strong>  {format(new Date(booking.checkInDate), 'dd MMM yyyy')}</p>
                                     <p><strong>Check-out:</strong> {format(new Date(booking.checkOutDate), 'dd MMM yyyy')}</p>
-                                    <p className="text-xl text-black"><strong>Total price</strong> {booking.totalPrice}kr for {calculateNights(booking.checkInDate, booking.checkOutDate)} nights.</p>
+                                    <p className="text-black"><strong>Total price</strong> {booking.totalPrice}kr for {calculateNights(booking.checkInDate, booking.checkOutDate)} nights.</p>
                                 </li>
                             ))}
                         </ul>
