@@ -19,12 +19,12 @@ const getUserIdFromToken = (token: string) => {
 export async function GET(request: Request) {
   try {
     // Hämta användarens ID från request-headers (eller query-parametrar)
-    const token = request.headers.get("Authorization")?.split(" ")[1]; // Hämtar token från "Authorization" header
+    const token = request.headers.get("Authorization")?.split(" ")[1]; 
     if (!token) {
       return NextResponse.json({ error: "Authorization token is missing." }, { status: 400 });
     }
 
-    const userId = await getUserIdFromToken(token); // Du kan skapa denna funktion för att hämta användarens ID från token
+    const userId = await getUserIdFromToken(token); 
 
     if (!userId) {
       return NextResponse.json({ error: "User not found or invalid token." }, { status: 400 });

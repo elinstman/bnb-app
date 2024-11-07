@@ -46,7 +46,7 @@ export default function Header() {
                 <Link href={"/"} className="ml-2 text-xl hidden sm:inline font-bold">StayCation</Link>
             
             <nav className="flex items-center space-x-4">
-               <Link href="#" className="text-gray-600 hover:text-gray-900">Book</Link>
+               <Link href="/book-your-staycation" className="text-gray-600 hover:text-gray-900">Book</Link>
                {user.token && (
               <Link href="/rent-your-home" className="flex relative items-center text-gray-600 hover:text-gray-900">
               Rent out your home
@@ -87,15 +87,6 @@ export default function Header() {
             <div className="relative">
     
     </div>
-
-           
-
-           
-
-           
-            
-           
-
         </div>
 
         <Modal isOpen={isModalOpen} onClose={closeModal}>

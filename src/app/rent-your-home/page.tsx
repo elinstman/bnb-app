@@ -1,4 +1,3 @@
-import LoginForm from "@/components/auth/loginform";
 import Header from "@/components/content/header";
 import Footer from "@/components/content/footer";
 import PropertyForm from "@/components/content/propertyForm";

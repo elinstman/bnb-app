@@ -64,10 +64,9 @@ function UserProvider({children}: PropsWithChildren) {
   const [loading, setLoading] = useState<boolean>(defaultState.loading);
 
   const setBookingsInContext = (bookings: Booking[]) => {
-    setBookings(bookings);  // Uppdaterar bokningarna i state
+    setBookings(bookings); 
   };
 
-//   se efter om det finns token sparad i localstorage
   useEffect(() => {
     if(!token) {
         let _token = LocalStorageKit.get("@library/token")
@@ -131,7 +130,7 @@ function UserProvider({children}: PropsWithChildren) {
         }
         // return console.log("token", token)
         const _user = await getUserAction(token)
-        console.log(_user)
+        // console.log(_user)
     } catch (error: any) {
         console.log(error)
         logout();

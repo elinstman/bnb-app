@@ -7,8 +7,6 @@ import Link from "next/link";
 export default function Properties() {
     const { properties, loading, error } = useProperties();
 
-    console.log("Properties Data:", properties);
-
     return (
         <section  className="container mx-auto p-8">
             <div className="flex flex-col items-start w-full space-y-4 sm:items-start sm:w-1/2">
