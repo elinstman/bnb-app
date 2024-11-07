@@ -24,6 +24,7 @@ export default function BookingCalender({ choosenProperty, userId, closeModal  }
     const { properties } = useProperties();
     const { actions, loading } = useBookings();
     const selectedProperty = properties?.find(property => property.id === choosenProperty);
+    const [bookingConfirmed, setBookingConfirmed] = useState(false);
 
 
     const [selectedRange, setSelectedRange] = useState<DateRange>({
@@ -31,9 +32,6 @@ export default function BookingCalender({ choosenProperty, userId, closeModal  }
         to: undefined
     });
 
-    // if (loading) {
-    //     return <p>Loading user data...</p>;
-    // }
 
     if (!selectedProperty) {
         return <p>Property not found.</p>;
@@ -63,17 +61,28 @@ export default function BookingCalender({ choosenProperty, userId, closeModal  }
                 propertyId, 
                 userId,
             });
-            toast.success("Your booking is complete!")
-            closeModal();  // Stänger modalen
 
-            
+            setBookingConfirmed(true);
+            setTimeout(() => closeModal(), 2000);
+
+           
+
+            // toast.success("Your booking is complete!")
+            //    closeModal();  
         }
+       
     };
+
+    const handleCloseForm = () => {
+        closeModal();  // Close the modal when the user clicks the close button
+    };
+   
+ 
 
 
     return (
         <div className="flex flex-col gap-2 justify-center">
-            <ToastContainer 
+            <ToastContainer
                 position="top-right"
                 autoClose={3000}
                 hideProgressBar={false}
@@ -85,31 +94,46 @@ export default function BookingCalender({ choosenProperty, userId, closeModal  }
                 pauseOnHover
                 theme="light"
             />
-        <h2 className="text-xl text-bold">Do you want to book {selectedProperty.name}?</h2>
-        <p>Price per night: {selectedProperty.pricePerNight}kr</p>
-        <div className="flex justify-center"> 
-        <Calendar
-         mode="range"
-         selected={{ from: selectedRange.from, to: selectedRange.to }}
-         onSelect={handleDateChange}
-         className="rounded-md border"
-        />
-        </div>
-        {selectedRange.from && selectedRange.to ? (
-                <div className="mt-4">
-                    <p>
-                        Check-in: {selectedRange.from.toLocaleDateString()} <br />
-                        Check-out: {selectedRange.to.toLocaleDateString()}
-                    </p>
 
-                    {/* Knapp för att bekräfta bokningen */}
-                    <button onClick={handleBooking} className="mt-4 btn-primary">
-                        Confirm Booking
-                    </button>
+            {/* Conditionally render based on booking confirmation */}
+            {bookingConfirmed ? (
+                <div className="flex flex-col gap-2 justify-center">
+                    <h2 className="text-xl text-bold">Your booking is saved!</h2>
+                    <div className="flex justify-center">
+                        <button onClick={handleCloseForm} className="mt-4 btn-primary">
+                            This form is closing soon
+                        </button>
+                    </div>
                 </div>
             ) : (
-                <p>Please select a check-in and check-out date.</p>
+                <div>
+                    <h2 className="text-xl text-bold">Do you want to book {selectedProperty.name}?</h2>
+                    <p>Price per night: {selectedProperty.pricePerNight}kr</p>
+                    <div className="flex justify-center">
+                        <Calendar
+                            mode="range"
+                            selected={{ from: selectedRange.from, to: selectedRange.to }}
+                            onSelect={handleDateChange}
+                            className="rounded-md border"
+                        />
+                    </div>
+                    {selectedRange.from && selectedRange.to ? (
+                        <div className="mt-4">
+                            <p>
+                                Check-in: {selectedRange.from.toLocaleDateString()} <br />
+                                Check-out: {selectedRange.to.toLocaleDateString()}
+                            </p>
+
+                            {/* Button to confirm the booking */}
+                            <button onClick={handleBooking} className="mt-4 btn-primary">
+                                Confirm Booking
+                            </button>
+                        </div>
+                    ) : (
+                        <p>Please select a check-in and check-out date.</p>
+                    )}
+                </div>
             )}
-    </div>
+        </div>
     )
 }
